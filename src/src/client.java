@@ -4,6 +4,7 @@ import javax.net.ssl.*;
 import javax.security.cert.X509Certificate;
 import java.security.KeyStore;
 import java.security.cert.*;
+import java.security.*;
 
 /*
  * This example shows how to set up a key manager to perform client
@@ -73,7 +74,9 @@ public class client {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String msg;
+
 			for (;;) {
+			    //commands to server based on granted access rights
                 System.out.print(">");
                 msg = read.readLine();
                 if (msg.equalsIgnoreCase("quit")) {

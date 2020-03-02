@@ -8,6 +8,9 @@ import javax.security.cert.X509Certificate;
 public class server implements Runnable {
     private ServerSocket serverSocket = null;
     private static int numConnectedClients = 0;
+    Boolean authenticated = false;
+    String userName = null;
+    String password = null;
 
     public server(ServerSocket ss) throws IOException {
         serverSocket = ss;
@@ -32,13 +35,37 @@ public class server implements Runnable {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             String clientMsg = null;
+
             while ((clientMsg = in.readLine()) != null) {
-			    String rev = new StringBuilder(clientMsg).reverse().toString();
-                System.out.println("received '" + clientMsg + "' from client");
-                System.out.print("sending '" + rev + "' to client...");
-				out.println(rev);
-				out.flush();
-                System.out.println("done\n");
+
+                if(!authenticated){
+                    if(userName == null){
+                        userName = clientMsg;
+                        System.out.println("got " + userName + " as username");
+                        out.println("recieved username");
+                        out.flush();
+
+                    }else if(password == null){
+                        password = clientMsg;
+                        System.out.println("got " + password + " as password");
+                        out.println("recieved password");
+                        out.flush();
+
+                        if(userName.equals("a") && password.equals("a")){
+                            authenticated = true;
+                            out.println("Välkommen");
+                            out.flush();
+                        }
+                    }
+                } else {
+
+                    String rev = new StringBuilder(clientMsg).reverse().toString();
+                    System.out.println("received '" + clientMsg + "' from client");
+                    System.out.print("sending '" + rev + "' to client...");
+                    out.println(rev);
+                    out.flush();
+                    System.out.println("done\n");
+                }
 			}
 			in.close();
 			out.close();
