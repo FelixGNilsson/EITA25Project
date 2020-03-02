@@ -3,10 +3,12 @@ import java.io.PrintWriter;
 
 public class ServerUtils {
 
-    private String userName = null;
-    private String password = null;
+    private String userName;
+    private String password;
+    private AccountReader accReader;
 
     public ServerUtils(){
+        accReader = new AccountReader();
     }
 
     public boolean authenticate(String clientMsg, PrintWriter out) {
@@ -19,12 +21,22 @@ public class ServerUtils {
         }else if(password == null){
             password = clientMsg;
             System.out.println("got " + password + " as password");
-            if(userName.equals("a") && password.equals("a")){
+            String[] account = accReader.getAccountInformation(userName);
+
+            if(account != null){
+                for(int i = 0; i < account.length; i++){
+                    System.out.println(account[i]);
+                }
+            } else {
+                System.out.println("account null when user:" + userName + " and pwd: " + password);
+            }
+
+            if(account != null && password.equals(account[2])){
                 out.println("Successful login");
                 out.flush();
                 return true;
             }
-            else {
+            else{
                 userName = null;
                 password = null;
                 out.println("Failed login");
