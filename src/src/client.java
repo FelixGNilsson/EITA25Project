@@ -83,7 +83,7 @@ public class client {
                 System.out.println("Password?");
                 String response = input(read,out,in);
 
-                if(response.equals("Välkommen")){
+                if(response.equals("Successful login")){
                     authenticated = true;
                 }
             }

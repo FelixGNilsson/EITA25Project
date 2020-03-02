@@ -1,33 +1,36 @@
 import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.PrintWriter;
 
 public class ServerUtils {
-    BufferedReader read;
 
-    public ServerUtils(BufferedReader read){
-        this.read = read;
+    private String userName = null;
+    private String password = null;
+
+    public ServerUtils(){
     }
 
-    public void authenticate() throws IOException {
-        Boolean auth = false;
+    public boolean authenticate(String clientMsg, PrintWriter out) {
 
-        //Authentication by password
-        while(!auth){
-            String userName;
-            String psw;
-
-            System.out.println("Username?");
-            userName = read.readLine();
-            System.out.println("Password?");
-            psw = read.readLine();
-
-            if(userName.equals("a") && psw.equals("a")){
-                System.out.println("Bra jobbat!");
-                auth = true;
+        if(userName == null){
+            userName = clientMsg;
+            System.out.println("got " + userName + " as username");
+            out.println("recieved username");
+            out.flush();
+        }else if(password == null){
+            password = clientMsg;
+            System.out.println("got " + password + " as password");
+            if(userName.equals("a") && password.equals("a")){
+                out.println("Successful login");
+                out.flush();
+                return true;
             }
-            else{
-                System.out.println("Sluta hacka mig");
+            else {
+                userName = null;
+                password = null;
+                out.println("Failed login");
+                out.flush();
             }
         }
+        return false;
     }
 }

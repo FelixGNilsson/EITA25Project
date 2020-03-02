@@ -9,8 +9,7 @@ public class server implements Runnable {
     private ServerSocket serverSocket = null;
     private static int numConnectedClients = 0;
     Boolean authenticated = false;
-    String userName = null;
-    String password = null;
+    ServerUtils utils = new ServerUtils();
 
     public server(ServerSocket ss) throws IOException {
         serverSocket = ss;
@@ -36,32 +35,11 @@ public class server implements Runnable {
 
             String clientMsg = null;
 
+            while (!authenticated && (clientMsg = in.readLine()) != null) {
+               authenticated = utils.authenticate(clientMsg, out);
+            }
+
             while ((clientMsg = in.readLine()) != null) {
-
-                if(!authenticated){
-                    if(userName == null){
-                        userName = clientMsg;
-                        System.out.println("got " + userName + " as username");
-                        out.println("recieved username");
-                        out.flush();
-
-                    }else if(password == null){
-                        password = clientMsg;
-                        System.out.println("got " + password + " as password");
-
-                        if(userName.equals("a") && password.equals("a")){
-                            authenticated = true;
-                            out.println("Välkommen");
-                            out.flush();
-                        }
-                        else {
-                            userName = null;
-                            password = null;
-                            out.println("Failed login");
-                            out.flush();
-                        }
-                    }
-                } else {
 
                     String rev = new StringBuilder(clientMsg).reverse().toString();
                     System.out.println("received '" + clientMsg + "' from client");
@@ -69,7 +47,6 @@ public class server implements Runnable {
                     out.println(rev);
                     out.flush();
                     System.out.println("done\n");
-                }
 			}
 			in.close();
 			out.close();
