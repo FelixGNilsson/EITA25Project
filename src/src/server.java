@@ -48,12 +48,16 @@ public class server implements Runnable {
                     }else if(password == null){
                         password = clientMsg;
                         System.out.println("got " + password + " as password");
-                        out.println("recieved password");
-                        out.flush();
 
                         if(userName.equals("a") && password.equals("a")){
                             authenticated = true;
                             out.println("Välkommen");
+                            out.flush();
+                        }
+                        else {
+                            userName = null;
+                            password = null;
+                            out.println("Failed login");
                             out.flush();
                         }
                     }
