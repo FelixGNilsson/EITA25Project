@@ -74,6 +74,19 @@ public class client {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String msg;
+            Boolean authenticated = false;
+
+            while(!authenticated){
+                System.out.println("Username?");
+                input(read,out,in);
+
+                System.out.println("Password?");
+                String response = input(read,out,in);
+
+                if(response.equals("Välkommen")){
+                    authenticated = true;
+                }
+            }
 
 			for (;;) {
 			    //commands to server based on granted access rights
@@ -96,6 +109,21 @@ public class client {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static String input(BufferedReader read, PrintWriter out, BufferedReader in) throws IOException{
+        String msg;
+        String response;
+        System.out.print(">");
+        msg = read.readLine();
+        System.out.print("sending '" + msg + "' to server...");
+        out.println(msg);
+        out.flush();
+        System.out.println("done");
+
+        response = in.readLine();
+        System.out.println("received '" + response + "' from server\n");
+        return response;
     }
 
 }
