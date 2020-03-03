@@ -7,7 +7,8 @@ DROP TABLE IF EXISTS logs;
 PRAGMA foreign_keys=ON;
 
 CREATE TABLE users(
-  username TEXT PRIMARY KEY,
+  username TEXT,
+  ssn INT PRIMARY KEY,
   fullname TEXT,
   role TEXT,
   division TEXT,

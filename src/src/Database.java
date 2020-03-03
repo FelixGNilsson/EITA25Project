@@ -72,7 +72,7 @@ public class Database {
         try (PreparedStatement ps = conn.prepareStatement(query)) {
             ResultSet rs = ps.executeQuery();
             String result = JSONizer.toJSON(rs, "data");
-
+            
             return result;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -80,11 +80,28 @@ public class Database {
         return "";
     }
     
-    public boolean createUser(String username, String fullname, String role, String division, String password) {
+    public boolean createUser(String username, String ssn, String fullname, String role, String division, String password) {
     	
     	try {
     		String salt = PasswordManager.getSalt();
         	String hashed = PasswordManager.generatePasswdHash(password, salt);
+        	String query = 
+        			"INSERT\n"+
+        			"INTO users(username, ssn, fullname, role, division, password, salt)\n"+
+        			"VALUES (?,?,?,?,?,?,?)";	
+        	try(PreparedStatement ps = conn.prepareStatement(query)){
+        		ps.setString(1,username);
+        		ps.setString(2, ssn);
+        		ps.setString(3, fullname);
+        		ps.setString(4, role);
+        		ps.setString(5, division);
+        		ps.setString(6, hashed);
+        		ps.setString(7, salt);
+        	}catch(SQLException e) {
+        		e.printStackTrace();
+        		return false;
+        	}
+        					
         	
         	return true;
         	
@@ -115,7 +132,7 @@ public class Database {
     
     public String  listAsStaff(String division) {
     	String query =
-                "SELECT    * \n" +
+                "SELECT    patient as Name, ssn as SocialSecurity, id as JournalID\n" +
                 "FROM      journals\n" +	
                 "WHERE		division = ?";
         	try (PreparedStatement ps = conn.prepareStatement(query)) {
@@ -132,7 +149,7 @@ public class Database {
  
     public String listAsGov() {
     	String query =
-                "SELECT    * \n" +
+                "SELECT    patient as Name, ssn as SocialSecurity, id as JournalID \n" +
                 "FROM      journals";
         	try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ResultSet rs = ps.executeQuery();
@@ -143,6 +160,8 @@ public class Database {
             }
         	return "";
     }
+    
+    
     
     
     
@@ -220,13 +239,13 @@ class JSONizer {
                 sb.append("\n");
             }
             first = false;
-            sb.append("    {");
+            sb.append("    {\n\t");
             for (int i = 1; i <= meta.getColumnCount(); i++) {
                 String label = meta.getColumnLabel(i);
                 String value = getValue(rs, i, meta.getColumnType(i));
                 sb.append("\"" + label + "\": " + value);
                 if (i < meta.getColumnCount()) {
-                    sb.append(", ");
+                    sb.append("\n\t");
                 }
             }
             sb.append("}");
