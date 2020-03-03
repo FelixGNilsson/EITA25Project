@@ -11,7 +11,8 @@ CREATE TABLE users(
   fullname TEXT,
   role TEXT,
   division TEXT,
-  password TEXT
+  password TEXT,
+  salt TEXT
 );
 
 CREATE TABLE journals(

@@ -7,7 +7,7 @@ public class Government extends User {
     @Override
     public String ls(Database db) {
         //list all
-        return "Not implemented";
+        return format(db.listAsGov());
     }
 
     @Override

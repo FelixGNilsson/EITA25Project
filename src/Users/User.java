@@ -10,7 +10,7 @@ public abstract class User {
 
     public String ls(Database db){
         //default functionality, return all rows within users division
-        return "Not implemented";
+        return format(db.listAsStaff(division));
     }
     public String modify(String patient, String status, Database db){
         //default, find patient row, check division and change status if correct division
@@ -23,6 +23,10 @@ public abstract class User {
     public String mkPatient(String patient, String nurse, String illness, String pwd, Database db){
         //defined in doctor
         return "Not Authorized";
+    }
+
+    protected String format(String str){
+        return str.replaceAll("\n", " ");
     }
 
 

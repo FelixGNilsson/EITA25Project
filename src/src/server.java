@@ -95,7 +95,7 @@ public class server implements Runnable {
         }
         
       
-        Database db = new Database("db.sqlite");
+        Database db = new Database("C:\\Users\\Felan\\IdeaProjects\\EITA25Project\\src\\src\\db.sqlite");
         System.out.println(db.getUsers());
         utils = new ServerUtils(db);
         

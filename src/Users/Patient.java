@@ -6,8 +6,7 @@ public class Patient extends User{
 
     @Override
     public String ls(Database db) {
-        //Only return row with this name
-        return null;
+        return format(db.listAsUser(name));
     }
 
     @Override
