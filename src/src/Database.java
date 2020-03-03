@@ -64,10 +64,6 @@ public class Database {
         return conn != null;
     }
 
-    /* ================================== */
-    /* --- insert your own code below --- */
-    /* ===============================*== */
-
     public String getUsers() {
         String query =
             "SELECT    * \n" +
@@ -118,7 +114,7 @@ public class Database {
     
     public String listAsUser(String username) {
     	String query =
-            "SELECT    patient as Name, ssn as SocialSecurity, id as JournalID\\n" +
+            "SELECT    * \n" +
             "FROM      journals\n" +	
             "WHERE		patient = ?";
     	try (PreparedStatement ps = conn.prepareStatement(query)) {
@@ -164,24 +160,60 @@ public class Database {
         	return "";
     }
     
-    public String viewJournal(String username, String journalID) {
-    	//TODO: patients should only be able to access their own journal
-    	//TODO: Show which patient the journal belongs to 
+    /*
+     * ONLY FOR TESTING PURPOSES!!!!
+     */
+    public String viewJournals() {
     	String query =
                 "SELECT    * \n" +
                 "FROM      journals\n"+
-                "WHERE id = ?";
-        	try (PreparedStatement ps = conn.prepareStatement(query)) {
-        		ps.setString(1, journalID);
-                ResultSet rs = ps.executeQuery();
-                logJournalAccess(username, journalID, "Read");
-                String result = JSONizer.toJSON(rs, "data");
-                return result;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        	return "";
+                "JOIN users"+
+                "USING(patientssn)";
+    	try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ResultSet rs = ps.executeQuery();
+            String result = JSONizer.toJSON(rs, "data");
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	return "";
     }
+    
+    public String viewJournal(String username, String journalID) {
+    	//TODO: Show patientname (MIGHT BE SOLVED)
+    	String query =
+                "SELECT    * \n" +
+                "FROM      journals\n"+
+                "JOIN 	   users"+
+                "USING     (patientssn)"+
+                "WHERE     id = ?";
+    	try (PreparedStatement ps = conn.prepareStatement(query)) {
+    		ps.setString(1, journalID);
+            ResultSet rs = ps.executeQuery();
+            logJournalAccess(username, journalID, "Read");
+            String result = JSONizer.toJSON(rs, "data");
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	return "";
+    }
+    
+    
+    public String viewLogs() {
+    	String query =
+                "SELECT    * \n" +
+                "FROM      logs";
+    	try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ResultSet rs = ps.executeQuery();
+            String result = JSONizer.toJSON(rs, "data");
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	return "";
+    }
+   
     
     
     
@@ -205,8 +237,49 @@ public class Database {
         	
     }
     
+    /*
+     * Creates a journal for a patient and assigns doctor, nurse, and division
+     * returns true if journal was successfully created
+     * TODO: Control that journal isn't created with non-existing users
+     * 
+     */
+    public boolean createJournal(String patientSSN, String doctorSSN, String nurseSSN, String division) {
+    	String query = 
+    			"INSERT\n"+
+    			"INTO journals(patientssn, doctorssn, nursessn, division)\n"+
+    			"VALUES (?,?,?,?);";	
+    	try(PreparedStatement ps = conn.prepareStatement(query)){
+    		ps.setString(1, patientSSN);
+    		ps.setString(2, doctorSSN);
+    		ps.setString(3, nurseSSN);
+    		ps.setString(4, division);
+    		logJournalAccess(doctorSSN, null, "Creation");
+    	}catch(SQLException e) {
+    		e.printStackTrace();
+    		return false;
+    	}
+    					
+    	return true;
+    }
     
     
+    public boolean editJournalContent(String userSSN, String journalID, String content) {
+    	String query = 
+    			"UPDATE journals\n"+
+    			"SET content = ?\n"+
+    			"WHERE journalid = ?";	
+    	try(PreparedStatement ps = conn.prepareStatement(query)){
+    		ps.setString(1, content);
+    		ps.setString(2, journalID);
+    		logJournalAccess(userSSN, null, "Edit");
+    	}catch(SQLException e) {
+    		e.printStackTrace();
+    		return false;
+    	}
+    					
+    	return true;
+    	
+    }
     
    
     

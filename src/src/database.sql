@@ -7,8 +7,8 @@ DROP TABLE IF EXISTS logs;
 PRAGMA foreign_keys=ON;
 
 CREATE TABLE users(
-  username TEXT PRIMARY KEY,
-  ssn INT,
+  username TEXT,
+  ssn INT PRIMARY KEY,
   fullname TEXT,
   role TEXT,
   division TEXT,
@@ -18,15 +18,16 @@ CREATE TABLE users(
 
 CREATE TABLE journals(
   id TEXT DEFAULT (lower(hex(randomblob(16)))),
-  patient TEXT,
-  doctor TEXT,
-  nurse TEXT,
+  patientssn TEXT,
+  doctorssn TEXT,
+  nursessn TEXT,
   content TEXT,
+  division TEXT,
 
   PRIMARY KEY(id)
-  FOREIGN KEY(patient) REFERENCES users(username)
-  FOREIGN KEY(doctor) REFERENCES users(username)
-  FOREIGN KEY(nurse) REFERENCES users(username)
+  FOREIGN KEY(patientssn) REFERENCES users(ssn)
+  FOREIGN KEY(doctorssn) REFERENCES users(ssn)
+  FOREIGN KEY(nursessn) REFERENCES users(ssn)
 );
 
 CREATE TABLE logs(
@@ -39,7 +40,7 @@ CREATE TABLE logs(
 
   PRIMARY KEY(id)
   FOREIGN KEY(journal) REFERENCES journals(id)
-  FOREIGN KEY(user) REFERENCES users(username)
+  FOREIGN KEY(user) REFERENCES users(ssn)
 );
 
 
