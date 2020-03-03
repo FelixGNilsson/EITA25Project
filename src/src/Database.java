@@ -85,25 +85,23 @@ public class Database {
     
     /*
      * Creates a new user and hashes the password with a random salt
-     * TODO: Find user by ssn
      */
-    public boolean createUser(String username, String ssn, String fullname, String role, String division, String password) {
+    public boolean createUser(String username,  String fullname, String role, String division, String password) {
     	//TODO: Create 2FA
     	try {
     		String salt = PasswordManager.getSalt();
         	String hashed = PasswordManager.generatePasswdHash(password, salt);
         	String query = 
         			"INSERT\n"+
-        			"INTO users(username, ssn, fullname, role, division, password, salt)\n"+
-        			"VALUES (?,?,?,?,?,?,?);";	
+        			"INTO users(username, fullname, role, division, password, salt)\n"+
+        			"VALUES (?,?,?,?,?,?);";	
         	try(PreparedStatement ps = conn.prepareStatement(query)){
         		ps.setString(1,username);
-        		ps.setString(2, ssn);
-        		ps.setString(3, fullname);
-        		ps.setString(4, role);
-        		ps.setString(5, division);
-        		ps.setString(6, hashed);
-        		ps.setString(7, salt);
+        		ps.setString(2, fullname);
+        		ps.setString(3, role);
+        		ps.setString(4, division);
+        		ps.setString(5, hashed);
+        		ps.setString(6, salt);
         	}catch(SQLException e) {
         		e.printStackTrace();
         		return false;
@@ -122,15 +120,14 @@ public class Database {
     
     /*
      * Lists all journals 
-     * TODO: use ssn
      */
-    public String listAsUser(String ssn) {
+    public String listAsUser(String username) {
     	String query =
             "SELECT    * \n" +
             "FROM      journals\n" +	
             "WHERE		patient = ?";
     	try (PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setString(1, ssn);
+            ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
             String result = JSONizer.toJSON(rs, "data");
             return result;
@@ -146,7 +143,7 @@ public class Database {
     */
     public String listAsStaff(String division) {
     	String query =
-                "SELECT    patient as Name, ssn as SocialSecurity, id as JournalID\n" +
+                "SELECT    patient as Name, id as JournalID\n" +
                 "FROM      journals\n" +	
                 "WHERE		division = ?";
         	try (PreparedStatement ps = conn.prepareStatement(query)) {
@@ -166,7 +163,7 @@ public class Database {
      */
     public String listAsGov() {
     	String query =
-                "SELECT    patient as Name, ssn as SocialSecurity, id as JournalID \n" +
+                "SELECT    patient as Name, id as JournalID \n" +
                 "FROM      journals";
         	try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ResultSet rs = ps.executeQuery();
@@ -186,7 +183,7 @@ public class Database {
                 "SELECT    * \n" +
                 "FROM      journals\n"+
                 "JOIN users"+
-                "USING(patientssn)";
+                "USING(patient)";
     	try (PreparedStatement ps = conn.prepareStatement(query)) {
             ResultSet rs = ps.executeQuery();
             String result = JSONizer.toJSON(rs, "data");
@@ -206,7 +203,7 @@ public class Database {
                 "SELECT    * \n" +
                 "FROM      journals\n"+
                 "JOIN 	   users"+
-                "USING     (patientssn)"+
+                "USING     (patient)"+
                 "WHERE     id = ?";
     	try (PreparedStatement ps = conn.prepareStatement(query)) {
     		ps.setString(1, journalID);
@@ -269,17 +266,17 @@ public class Database {
      * TODO: Control that journal isn't created with non-existing users
      * TODO: return the journal ID
      */
-    public boolean createJournal(String patientSSN, String doctorSSN, String nurseSSN, String division) {
+    public boolean createJournal(String patient, String doctor, String nurse, String division) {
     	String query = 
     			"INSERT\n"+
-    			"INTO journals(patientssn, doctorssn, nursessn, division)\n"+
+    			"INTO journals(patient, doctor, nurse, division)\n"+
     			"VALUES (?,?,?,?);";	
     	try(PreparedStatement ps = conn.prepareStatement(query)){
-    		ps.setString(1, patientSSN);
-    		ps.setString(2, doctorSSN);
-    		ps.setString(3, nurseSSN);
+    		ps.setString(1, patient);
+    		ps.setString(2, doctor);
+    		ps.setString(3, nurse);
     		ps.setString(4, division);
-    		logJournalAccess(doctorSSN, null, "Creation");
+    		logJournalAccess(doctor, null, "Creation");
     	}catch(SQLException e) {
     		e.printStackTrace();
     		return false;
@@ -292,7 +289,7 @@ public class Database {
     /*
      * Edits the content of a journal with the given id and adds a new log.
      */
-    public boolean editJournalContent(String userSSN, String journalID, String content) {
+    public boolean editJournalContent(String user, String journalID, String content) {
     	String query = 
     			"UPDATE journals\n"+
     			"SET content = ?\n"+
@@ -300,7 +297,7 @@ public class Database {
     	try(PreparedStatement ps = conn.prepareStatement(query)){
     		ps.setString(1, content);
     		ps.setString(2, journalID);
-    		logJournalAccess(userSSN, null, "Edit");
+    		logJournalAccess(user, null, "Edit");
     	}catch(SQLException e) {
     		e.printStackTrace();
     		return false;
@@ -317,10 +314,12 @@ public class Database {
     
     /*
      * Authenticates user login
+     * TODO: returnera relevant information (role and division)
      */
-    public boolean authenticateUser(String username, String password) {
+    public String authenticateUser(String username, String password) {
+    	StringBuilder sb = new StringBuilder();
     	String query =
-                "SELECT    password, salt \n" +
+                "SELECT    password, salt, role, division \n" +
                 "FROM      users"+
         		"WHERE 	   username = ?";
     	try (PreparedStatement ps = conn.prepareStatement(query)) {
@@ -328,9 +327,21 @@ public class Database {
     		ResultSet rs = ps.executeQuery();
     		String correctHash = rs.getString("password");
     		String salt = rs.getString("salt");
+    		String role = rs.getString("role");
+    		String division = rs.getString("division");
     		String newHash = PasswordManager.generatePasswdHash(password, salt);
     		
-    		return correctHash.equals(newHash);
+    		
+    		if(correctHash.equals(newHash)) {
+    			sb.append(role);
+        		sb.append(":");
+        		sb.append(division);
+        		
+        		return sb.toString();
+    		}
+    		
+    		
+    		
     		
     	} catch (SQLException e) {
             e.printStackTrace();
@@ -339,7 +350,7 @@ public class Database {
 		}
     	
     	
-    	return false;
+    	return "Failed to authenticate user";
     }
     
     
