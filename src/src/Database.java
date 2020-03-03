@@ -314,11 +314,12 @@ public class Database {
     
     /*
      * Authenticates user login
-     * TODO: returnera relevant information
+     * TODO: returnera relevant information (role and division)
      */
-    public boolean authenticateUser(String username, String password) {
+    public String authenticateUser(String username, String password) {
+    	StringBuilder sb = new StringBuilder();
     	String query =
-                "SELECT    password, salt \n" +
+                "SELECT    password, salt, role, division \n" +
                 "FROM      users"+
         		"WHERE 	   username = ?";
     	try (PreparedStatement ps = conn.prepareStatement(query)) {
@@ -326,9 +327,21 @@ public class Database {
     		ResultSet rs = ps.executeQuery();
     		String correctHash = rs.getString("password");
     		String salt = rs.getString("salt");
+    		String role = rs.getString("role");
+    		String division = rs.getString("division");
     		String newHash = PasswordManager.generatePasswdHash(password, salt);
     		
-    		return correctHash.equals(newHash);
+    		
+    		if(correctHash.equals(newHash)) {
+    			sb.append(role);
+        		sb.append(":");
+        		sb.append(division);
+        		
+        		return sb.toString();
+    		}
+    		
+    		
+    		
     		
     	} catch (SQLException e) {
             e.printStackTrace();
@@ -337,7 +350,7 @@ public class Database {
 		}
     	
     	
-    	return false;
+    	return "Failed to authenticate user";
     }
     
     
