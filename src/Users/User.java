@@ -10,7 +10,7 @@ public abstract class User {
 
     public String ls(Database db){
         //default functionality, return all rows within users division
-        return format(db.listAsStaff(division));
+        return db.listAsStaff(division);
     }
     public String modify(String journalID, String status, Database db){
         //default, find patient row, check division and change status if correct division
@@ -31,9 +31,6 @@ public abstract class User {
         return "Not Authorized";
     }
 
-    protected String format(String str){
-        return str.replaceAll("\n", " ");
-    }
 
 
 }

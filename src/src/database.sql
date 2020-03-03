@@ -41,9 +41,3 @@ CREATE TABLE logs(
   FOREIGN KEY(journal) REFERENCES journals(id)
   FOREIGN KEY(user) REFERENCES users(username)
 );
-
-
-INSERT
-INTO users(username, fullname, role, password)
-VALUES ("ss", "socialstyrelsen", "gov", "password"),
-       ("admin", "admin", "admin", "password");

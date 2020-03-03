@@ -49,7 +49,9 @@ public class server implements Runnable {
             }
 
             while ((clientMsg = in.readLine()) != null) {
-                String response = utils.command(clientMsg);
+            	StringBuilder response = new StringBuilder();
+            	response.append(utils.command(clientMsg));
+            	response.append("\n|");
                 out.println(response);
                 out.flush();
                 //Only prints one line

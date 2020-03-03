@@ -4,6 +4,7 @@ import javax.net.ssl.*;
 import javax.security.cert.X509Certificate;
 import java.security.KeyStore;
 import java.security.cert.*;
+import java.util.Arrays;
 import java.security.*;
 
 /*
@@ -99,7 +100,19 @@ public class client {
                 out.flush();
                 System.out.println("done");
 
-                System.out.println("received '" + in.readLine() + "' from server\n");
+                String line;
+                try {
+                	
+                	while(true) {
+                		line = in.readLine();
+                		if(line.equals("|")) {
+                			break;
+                		}
+                		System.out.println(line);
+                	}
+                }catch(IOException e) {
+                	e.printStackTrace();
+                }
             }
             in.close();
 			out.close();

@@ -6,7 +6,7 @@ public class Patient extends User{
 
     @Override
     public String ls(Database db) {
-        return format(db.listAsUser(name));
+        return db.listAsUser(name);
     }
 
     @Override

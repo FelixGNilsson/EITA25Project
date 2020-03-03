@@ -7,9 +7,10 @@ public class Government extends User {
     @Override
     public String ls(Database db) {
         //list all
-        return format(db.listAsGov());
+        return db.listAsGov();
     }
 
+    //TODO implement
     @Override
     public String modify(String patient, String status, Database db) {
         return "Not Authorized";

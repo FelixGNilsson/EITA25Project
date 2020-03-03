@@ -1,12 +1,7 @@
-import static spark.Spark.*;
-
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
-import spark.*;
 
 
 public class Database {
@@ -22,6 +17,8 @@ public class Database {
      */
     public Database(String filename) {
         openConnection(filename);
+        //generateSampleUsers();
+        //generateSampleJournals();
     }
 
     /**
@@ -83,6 +80,27 @@ public class Database {
     }
     
     
+    private void generateSampleUsers() {
+    	createUser("doctorA", "Arnold Arnoldsson", "doctor", "general", "doctorA");
+    	createUser("doctorB", "Bob Bobsson", "doctor", "ortho", "doctorB");
+    	createUser("doctorC", "Charlie Charliesson", "doctor", "plastic", "doctorC");
+    	createUser("nurseA", "Abra Cadabra", "nurse", "general", "nurseA");
+    	createUser("nurseB", "Barbra Cadabra", "nurse", "ortho", "nurseB");
+    	createUser("nurseC", "Cadaver Cadabra", "nurse", "plastic", "nurseC");
+    	createUser("patientA", "Ant Doe", "patient", "general", "patientA");
+    	createUser("patientB", "Barbie Doe", "patient", "Ortho", "patientB");
+    	createUser("patientC", "Carmen Doe", "patient", "plastic", "patientC");
+    	createUser("gov", "Government", "government", "", "gov");
+    }
+    
+    private void generateSampleJournals() {
+    	createJournal("patientA", "doctorA", "nurseA", "general");
+    	createJournal("patientB", "doctorB", "nurseB", "ortho");
+    	createJournal("patientC", "doctorC", "nurseC", "plastic");
+
+
+    }
+    
     /*
      * Creates a new user and hashes the password with a random salt
      */
@@ -102,6 +120,7 @@ public class Database {
         		ps.setString(4, division);
         		ps.setString(5, hashed);
         		ps.setString(6, salt);
+        		ps.executeUpdate();
         	}catch(SQLException e) {
         		e.printStackTrace();
         		return false;
@@ -181,9 +200,7 @@ public class Database {
     public String viewJournals() {
     	String query =
                 "SELECT    * \n" +
-                "FROM      journals\n"+
-                "JOIN users"+
-                "USING(patient)";
+                "FROM      journals\n";
     	try (PreparedStatement ps = conn.prepareStatement(query)) {
             ResultSet rs = ps.executeQuery();
             String result = JSONizer.toJSON(rs, "data");
@@ -196,14 +213,12 @@ public class Database {
     
     /*
      * Shows the journal with the id journalID and logs which user accessed it
+     * TODO: make sure that the user has the rights to view journal
      */
     public String viewJournal(String username, String journalID) {
-    	//TODO: Show patientname (MIGHT BE SOLVED)
     	String query =
                 "SELECT    * \n" +
                 "FROM      journals\n"+
-                "JOIN 	   users"+
-                "USING     (patient)"+
                 "WHERE     id = ?";
     	try (PreparedStatement ps = conn.prepareStatement(query)) {
     		ps.setString(1, journalID);
@@ -251,7 +266,7 @@ public class Database {
         		ps.setString(4, user);
         		ps.setString(5, action);
                 
-        		ps.executeQuery();
+        		ps.executeUpdate();
                 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -267,16 +282,27 @@ public class Database {
      * TODO: return the journal ID
      */
     public boolean createJournal(String patient, String doctor, String nurse, String division) {
-    	String query = 
+    	String statement = 
     			"INSERT\n"+
     			"INTO journals(patient, doctor, nurse, division)\n"+
     			"VALUES (?,?,?,?);";	
-    	try(PreparedStatement ps = conn.prepareStatement(query)){
+    	try(PreparedStatement ps = conn.prepareStatement(statement)){
     		ps.setString(1, patient);
     		ps.setString(2, doctor);
     		ps.setString(3, nurse);
     		ps.setString(4, division);
-    		logJournalAccess(doctor, null, "Creation");
+    		ps.executeUpdate();
+    		String query =
+                    "SELECT    id \n" +
+                    "FROM      journals\n"+
+                    "WHERE    rowid = last_insert_rowid()";
+        	try (PreparedStatement ps2 = conn.prepareStatement(query)) {
+                ResultSet rs = ps2.executeQuery();
+                String id = rs.getString("id");
+                logJournalAccess(doctor, id, "Creation");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
     	}catch(SQLException e) {
     		e.printStackTrace();
     		return false;
@@ -288,12 +314,14 @@ public class Database {
     
     /*
      * Edits the content of a journal with the given id and adds a new log.
+     * TODO: Doctors should only be able to edit journals in their division
+     * TODO: Gov should be able to edit all journals
      */
     public boolean editJournalContent(String user, String journalID, String content) {
     	String query = 
     			"UPDATE journals\n"+
     			"SET content = ?\n"+
-    			"WHERE journalid = ?";	
+    			"WHERE id = ?";	
     	try(PreparedStatement ps = conn.prepareStatement(query)){
     		ps.setString(1, content);
     		ps.setString(2, journalID);
@@ -317,11 +345,10 @@ public class Database {
      * TODO: returnera relevant information (role and division)
      */
     public String authenticateUser(String username, String password) {
-    	StringBuilder sb = new StringBuilder();
     	String query =
                 "SELECT    password, salt, role, division \n" +
-                "FROM      users"+
-        		"WHERE 	   username = ?";
+                "FROM      users \n"+
+        		"WHERE 	   username = ? ";
     	try (PreparedStatement ps = conn.prepareStatement(query)) {
     		ps.setString(1, username);
     		ResultSet rs = ps.executeQuery();
@@ -331,20 +358,16 @@ public class Database {
     		String division = rs.getString("division");
     		String newHash = PasswordManager.generatePasswdHash(password, salt);
     		
-    		
     		if(correctHash.equals(newHash)) {
+    	    	StringBuilder sb = new StringBuilder();
     			sb.append(role);
         		sb.append(":");
         		sb.append(division);
         		
         		return sb.toString();
-    		}
-    		
-    		
-    		
-    		
+    		}	
     	} catch (SQLException e) {
-            e.printStackTrace();
+    		return "Failed to authenticate user";
         } catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
@@ -353,61 +376,6 @@ public class Database {
     	return "Failed to authenticate user";
     }
     
-    
-    /*
-
-    public String getStudent(Request req, Response res, String id) {
-        String query =
-            "SELECT    s_id AS id, s_name AS name, gpa\n" +
-            "FROM      students\n" +
-            "WHERE     s_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-            String result = JSONizer.toJSON(rs, "data");
-            res.status(200);
-            res.body(result);
-            return result;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    public String addStudent(Request req, Response res) {
-        String statement =
-            "INSERT\n" +
-            "INTO     students(s_id, s_name, gpa, size_hs)\n" +
-            "VALUES   (?, ?, ?, ?)\n";
-        try (PreparedStatement ps = conn.prepareStatement(statement)) {
-            ps.setString(1, req.queryParams("id"));
-            ps.setString(2, req.queryParams("name"));
-            ps.setString(3, req.queryParams("gpa"));
-            ps.setString(4, req.queryParams("sizeHs"));
-            if (ps.executeUpdate() != 1) {
-                res.status(400);
-                return "nothing happened";
-            }
-            String query =
-                "SELECT   s_id\n" +
-                "FROM     students\n" +
-                "WHERE    rowid = last_insert_rowid()\n";
-            try (PreparedStatement ps2 = conn.prepareStatement(query)) {
-                ResultSet rs = ps2.executeQuery();
-                if (rs.next()) {
-                    String newId = rs.getString("s_id");
-                    String result = String.format("{ 'id': %s", newId);
-                    res.status(201);
-                    res.body(result);
-                    return result;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-    */
 }
 
 

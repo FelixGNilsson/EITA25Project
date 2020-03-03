@@ -47,6 +47,7 @@ public class ServerUtils {
 
     public String command(String clientMsg){
         String[] command = clientMsg.split(" ");
+        //TODO: ta bort felix lösning på problemet
         if(command[0].equals("ls")){
             return currentUser.ls(db);
         }
@@ -59,7 +60,17 @@ public class ServerUtils {
         if(command[0].equals("mkJournal")){
             return currentUser.mkJournal(command[1], command[2], command[3], command[4],db);
         }
+        if(command[0].equals("listJournals")){
+            return db.viewJournals(); 
+        }
+        if(command[0].equals("listLogs")){
+            return db.viewLogs();
+        }
+        if(command[0].equals("listUsers")){
+            return db.getUsers();
+        }
         return "Unknown command";
+        
     }
 
     private void defineUser(String user, String role, String division){
