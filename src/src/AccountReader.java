@@ -11,7 +11,7 @@ public class AccountReader {
     public String[] getAccountInformation(String userName){
         String line;
         try{
-            BufferedReader reader = new BufferedReader(new FileReader("projekt1/Accounts.txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("Certificates/Accounts.txt"));
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
                 String[] lineArray = line.split(":"); //DELIMITER?
