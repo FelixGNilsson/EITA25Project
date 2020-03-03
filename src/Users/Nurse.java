@@ -1,21 +1,7 @@
 public class Nurse extends User{
 
-    public Nurse(String division) {
-        super(division);
+    public Nurse(String name, String division) {
+        super(name, division);
     }
-
-    @Override
-    public void ls() {
-
-    }
-
-    @Override
-    public void modify() {
-
-    }
-
-    @Override
-    public void delete() {
-
-    }
+    //default behaviour ok
 }

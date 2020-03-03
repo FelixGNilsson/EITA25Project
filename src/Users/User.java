@@ -1,13 +1,29 @@
 public abstract class User {
 
+    protected String name;
     private String division;
 
-    public User(String division){
+    public User(String name, String division){
+        this.name = name;
         this.division = division;
     }
 
-    public abstract void ls();
-    public abstract void modify();
-    public abstract void delete();
+    public String ls(){
+        //default functionality, return all rows within users division
+        return "Not implemented";
+    }
+    public String modify(String patient, String status){
+        //default, find patient row, check division and change status if correct division
+        return "Not implemented";
+    }
+    public String delete(String patient){
+        //define in government
+        return "Not Authorized";
+    }
+    public String mkPatient(String patient, String nurse, String illness, String pwd){
+        //defined in doctor
+        return "Not Authorized";
+    }
+
 
 }

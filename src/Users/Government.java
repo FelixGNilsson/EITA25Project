@@ -1,21 +1,23 @@
 public class Government extends User {
 
-    public Government(String division) {
-        super(division);
+    public Government(String name, String division) {
+        super(name,division);
     }
 
     @Override
-    public void ls() {
-
+    public String ls() {
+        //list all
+        return "Not implemented";
     }
 
     @Override
-    public void modify() {
-
+    public String modify(String patient, String status) {
+        return "Not Authorized";
     }
 
     @Override
-    public void delete() {
-
+    public String delete(String patient) {
+        //delete row, no questions asked
+        return "not impl";
     }
 }

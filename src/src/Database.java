@@ -62,15 +62,14 @@ public class Database {
     /* --- insert your own code below --- */
     /* ===============================*== */
 
-    
-    
     public String getUsers() {
         var query =
             "SELECT    * \n" +
             "FROM      journals	";
         try (var ps = conn.prepareStatement(query)) {
-            var rs = ps.executeQuery();
-            var result = JSONizer.toJSON(rs, "data");
+            ResultSet rs = ps.executeQuery();
+            String result = JSONizer.toJSON(rs, "data");
+
             return result;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -79,14 +78,14 @@ public class Database {
     }
 
     public String getStudent(Request req, Response res, String id) {
-        var query =
+        String query =
             "SELECT    s_id AS id, s_name AS name, gpa\n" +
             "FROM      students\n" +
             "WHERE     s_id = ?";
-        try (var ps = conn.prepareStatement(query)) {
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, id);
-            var rs = ps.executeQuery();
-            var result = JSONizer.toJSON(rs, "data");
+            ResultSet rs = ps.executeQuery();
+            String result = JSONizer.toJSON(rs, "data");
             res.status(200);
             res.body(result);
             return result;
@@ -97,11 +96,11 @@ public class Database {
     }
 
     public String addStudent(Request req, Response res) {
-        var statement =
+        String statement =
             "INSERT\n" +
             "INTO     students(s_id, s_name, gpa, size_hs)\n" +
             "VALUES   (?, ?, ?, ?)\n";
-        try (var ps = conn.prepareStatement(statement)) {
+        try (PreparedStatement ps = conn.prepareStatement(statement)) {
             ps.setString(1, req.queryParams("id"));
             ps.setString(2, req.queryParams("name"));
             ps.setString(3, req.queryParams("gpa"));
@@ -110,15 +109,15 @@ public class Database {
                 res.status(400);
                 return "nothing happened";
             }
-            var query =
+            String query =
                 "SELECT   s_id\n" +
                 "FROM     students\n" +
                 "WHERE    rowid = last_insert_rowid()\n";
-            try (var ps2 = conn.prepareStatement(query)) {
-                var rs = ps2.executeQuery();
+            try (PreparedStatement ps2 = conn.prepareStatement(query)) {
+                ResultSet rs = ps2.executeQuery();
                 if (rs.next()) {
-                    var newId = rs.getString("s_id");
-                    var result = String.format("{ 'id': %s", newId);
+                    String newId = rs.getString("s_id");
+                    String result = String.format("{ 'id': %s", newId);
                     res.status(201);
                     res.body(result);
                     return result;

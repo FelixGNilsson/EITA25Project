@@ -47,18 +47,30 @@ public class ServerUtils {
     }
 
     public String command(String clientMsg){
-
-        return null;
+        String[] command = clientMsg.split(" ");
+        if(command[0].equals("ls")){
+            return currentUser.ls();
+        }
+        if(command[0].equals("modify")){
+            return currentUser.modify(command[1], command[2]);
+        }
+        if(command[0].equals("delete")){
+            return currentUser.delete(command[1]);
+        }
+        if(command[0].equals("mkPatient")){
+            return currentUser.mkPatient(command[1], command[2], command[3], command[4]);
+        }
+        return "Unknown command";
     }
 
     private void defineUser(String[] account){
         String typeOfUser = account[TYPE_OF_USER];
         if(typeOfUser.equalsIgnoreCase("Doctor")){
-            currentUser = new Doctor(account[DIVISION]);
+            currentUser = new Doctor(account[USERNAME], account[DIVISION]);
         } else if(typeOfUser.equalsIgnoreCase("Nurse")){
-            currentUser = new Nurse(account[DIVISION]);
+            currentUser = new Nurse(account[USERNAME], account[DIVISION]);
         } else if(typeOfUser.equalsIgnoreCase("Patient")){
-            currentUser = new Patient("");
+            currentUser = new Patient(account[USERNAME],"");
         }
     }
 

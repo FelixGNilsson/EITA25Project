@@ -1,2 +1,4 @@
-doktormugg:salt:password:doktor:division
+doktorA:salt:password:Doctor:A
+nurseA:salt:password:Nurse:A
+Daniel:salt:password:Patient:NULL
 USERNAME:SALT:PASSWORD:TYPE_OF_USER:DIVISION
