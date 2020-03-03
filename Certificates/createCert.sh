@@ -1,6 +1,8 @@
 #!/bin/bash
 
-read -p "enter name of client: " clientName
+read -p "enter name of client: " cn
+clientName=$(echo "$cn" | tr '[:upper:]' '[:lower:]')
+
 mkdir -p "client/$clientName"
 
 keytool -import -file public/CA.pem -alias CA -keystore TrustStore
