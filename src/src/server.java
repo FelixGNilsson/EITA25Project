@@ -1,9 +1,15 @@
+import static spark.Spark.*;
+import java.sql.*;
+import java.util.*;
+import spark.*;
+
 import java.io.*;
 import java.net.*;
 import java.security.KeyStore;
 import javax.net.*;
 import javax.net.ssl.*;
 import javax.security.cert.X509Certificate;
+
 
 public class server implements Runnable {
     private ServerSocket serverSocket = null;
@@ -86,6 +92,12 @@ public class server implements Runnable {
             System.out.println("Unable to start Server: " + e.getMessage());
             e.printStackTrace();
         }
+        
+      
+        //var db = new Database("applications.sqlite");
+        
+
+        
     }
 
     private static ServerSocketFactory getServerSocketFactory(String type) {
