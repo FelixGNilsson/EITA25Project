@@ -4,7 +4,6 @@ public class ServerUtils {
 
     private String userName;
     private String password;
-    private AccountReader accReader;
     private User currentUser;
     private static Database db;
 
@@ -15,7 +14,6 @@ public class ServerUtils {
     private static int DIVISION = 4;
 
     public ServerUtils(Database db){
-        accReader = new AccountReader();
         this.db = db;
     }
 
@@ -29,12 +27,12 @@ public class ServerUtils {
         }else if(password == null){
             password = clientMsg;
             System.out.println("got " + password + " as password");
-            String[] account = accReader.getAccountInformation(userName);
-
-            if(account != null && password.equals(account[PASSWORD])){
+            String res = db.authenticateUser(userName,password);
+            if(!res.equalsIgnoreCase("Failed to authenticate user")){
                 out.println("Successful login");
                 out.flush();
-                defineUser(account);
+                String[] info = res.split(":");
+                defineUser(userName, info[0], info[1]);
                 return true;
             }
             else{
@@ -64,14 +62,15 @@ public class ServerUtils {
         return "Unknown command";
     }
 
-    private void defineUser(String[] account){
-        String typeOfUser = account[TYPE_OF_USER];
-        if(typeOfUser.equalsIgnoreCase("Doctor")){
-            currentUser = new Doctor(account[USERNAME], account[DIVISION]);
-        } else if(typeOfUser.equalsIgnoreCase("Nurse")){
-            currentUser = new Nurse(account[USERNAME], account[DIVISION]);
-        } else if(typeOfUser.equalsIgnoreCase("Patient")){
-            currentUser = new Patient(account[USERNAME],"");
+    private void defineUser(String user, String role, String division){
+        if(role.equalsIgnoreCase("Doctor")){
+            currentUser = new Doctor(user, division);
+        } else if(role.equalsIgnoreCase("Nurse")){
+            currentUser = new Nurse(user, division);
+        } else if(role.equalsIgnoreCase("Patient")){
+            currentUser = new Patient(user,"");
+        } else if(role.equalsIgnoreCase("Government")){
+            currentUser = new Government("","");
         }
     }
 
