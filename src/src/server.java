@@ -98,8 +98,6 @@ public class server implements Runnable {
         var db = new Database("db.sqlite");
         System.out.println(db.getUsers());
         
-
-        
     }
 
     private static ServerSocketFactory getServerSocketFactory(String type) {

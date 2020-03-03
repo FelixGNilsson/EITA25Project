@@ -63,7 +63,7 @@ public class Database {
     /* ===============================*== */
 
     public String getUsers() {
-        var query =
+        String query =
             "SELECT    * \n" +
             "FROM      journals	";
         try (var ps = conn.prepareStatement(query)) {
