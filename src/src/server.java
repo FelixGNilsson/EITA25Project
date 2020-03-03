@@ -89,7 +89,8 @@ public class server implements Runnable {
         }
         
       
-        //var db = new Database("applications.sqlite");
+        var db = new Database("db.sqlite");
+        System.out.println(db.getUsers());
         
 
         

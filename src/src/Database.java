@@ -62,29 +62,15 @@ public class Database {
     /* --- insert your own code below --- */
     /* ===============================*== */
 
-    public String getStudents(Request req, Response res) {
+    
+    
+    public String getUsers() {
         var query =
-            "SELECT    s_id AS id, s_name AS name, gpa\n" +
-            "FROM      students\n" +
-            "WHERE     1 = 1\n";
-        var params = new ArrayList<String>();
-        if (req.queryParams("name") != null) {
-            query += " AND s_name = ?\n";
-            params.add(req.queryParams("name"));
-        }
-        if (req.queryParams("minGpa") != null) {
-            query += " AND gpa >= ?\n";
-            params.add(req.queryParams("minGpa"));
-        }
+            "SELECT    * \n" +
+            "FROM      journals	";
         try (var ps = conn.prepareStatement(query)) {
-            var idx = 0;
-            for (var param : params) {
-                ps.setString(++idx, param);
-            }
             var rs = ps.executeQuery();
             var result = JSONizer.toJSON(rs, "data");
-            res.status(200);
-            res.body(result);
             return result;
         } catch (SQLException e) {
             e.printStackTrace();
