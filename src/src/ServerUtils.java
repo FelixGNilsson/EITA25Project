@@ -6,6 +6,13 @@ public class ServerUtils {
     private String userName;
     private String password;
     private AccountReader accReader;
+    private User currentUser;
+
+    private static int USERNAME = 0;
+    private static int SALT = 1;
+    private static int PASSWORD = 2;
+    private static int TYPE_OF_USER = 3;
+    private static int DIVISION = 4;
 
     public ServerUtils(){
         accReader = new AccountReader();
@@ -23,17 +30,10 @@ public class ServerUtils {
             System.out.println("got " + password + " as password");
             String[] account = accReader.getAccountInformation(userName);
 
-            if(account != null){
-                for(int i = 0; i < account.length; i++){
-                    System.out.println(account[i]);
-                }
-            } else {
-                System.out.println("account null when user:" + userName + " and pwd: " + password);
-            }
-
-            if(account != null && password.equals(account[2])){
+            if(account != null && password.equals(account[PASSWORD])){
                 out.println("Successful login");
                 out.flush();
+                defineUser(account);
                 return true;
             }
             else{
@@ -45,4 +45,21 @@ public class ServerUtils {
         }
         return false;
     }
+
+    public String command(String clientMsg){
+
+        return null;
+    }
+
+    private void defineUser(String[] account){
+        String typeOfUser = account[TYPE_OF_USER];
+        if(typeOfUser.equalsIgnoreCase("Doctor")){
+            currentUser = new Doctor(account[DIVISION]);
+        } else if(typeOfUser.equalsIgnoreCase("Nurse")){
+            currentUser = new Nurse(account[DIVISION]);
+        } else if(typeOfUser.equalsIgnoreCase("Patient")){
+            currentUser = new Patient("");
+        }
+    }
+
 }

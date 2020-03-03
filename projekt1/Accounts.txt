@@ -1,2 +1,2 @@
-doktormugg:salt:password:doktor
-USERNAME;SALT;PASSWORD;TYPE_OF_USER
+doktormugg:salt:password:doktor:division
+USERNAME:SALT:PASSWORD:TYPE_OF_USER:DIVISION

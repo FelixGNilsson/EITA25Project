@@ -89,7 +89,6 @@ public class client {
             }
 
 			for (;;) {
-			    //commands to server based on granted access rights
                 System.out.print(">");
                 msg = read.readLine();
                 if (msg.equalsIgnoreCase("quit")) {

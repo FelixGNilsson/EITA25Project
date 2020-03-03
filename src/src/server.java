@@ -40,7 +40,9 @@ public class server implements Runnable {
             }
 
             while ((clientMsg = in.readLine()) != null) {
-
+                //String response = command(clientMsg);
+                //out.println(response)
+                //out.flush();
                     String rev = new StringBuilder(clientMsg).reverse().toString();
                     System.out.println("received '" + clientMsg + "' from client");
                     System.out.print("sending '" + rev + "' to client...");
