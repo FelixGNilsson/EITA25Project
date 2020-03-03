@@ -1,7 +1,10 @@
 import static spark.Spark.*;
+
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.*;
 import spark.*;
+
 
 public class Database {
 
@@ -66,7 +69,7 @@ public class Database {
         String query =
             "SELECT    * \n" +
             "FROM      users";
-        try (var ps = conn.prepareStatement(query)) {
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
             ResultSet rs = ps.executeQuery();
             String result = JSONizer.toJSON(rs, "data");
 
@@ -75,6 +78,70 @@ public class Database {
             e.printStackTrace();
         }
         return "";
+    }
+    
+    public boolean createUser(String username, String fullname, String role, String division, String password) {
+    	
+    	try {
+    		String salt = PasswordManager.getSalt();
+        	String hashed = PasswordManager.generatePasswdHash(password, salt);
+        	
+        	return true;
+        	
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+    	
+    	
+    	return false;
+    }
+    
+    public String listAsUser(String username) {
+    	String query =
+            "SELECT    * \n" +
+            "FROM      journals\n" +	
+            "WHERE		patient = ?";
+    	try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            String result = JSONizer.toJSON(rs, "data");
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	return "";
+    	
+    }
+    
+    public String  listAsStaff(String division) {
+    	String query =
+                "SELECT    * \n" +
+                "FROM      journals\n" +	
+                "WHERE		division = ?";
+        	try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ps.setString(1, division);
+                ResultSet rs = ps.executeQuery();
+                String result = JSONizer.toJSON(rs, "data");
+                return result;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        	return "";
+        	
+    }
+ 
+    public String listAsGov() {
+    	String query =
+                "SELECT    * \n" +
+                "FROM      journals";
+        	try (PreparedStatement ps = conn.prepareStatement(query)) {
+                ResultSet rs = ps.executeQuery();
+                String result = JSONizer.toJSON(rs, "data");
+                return result;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        	return "";
     }
     
     
