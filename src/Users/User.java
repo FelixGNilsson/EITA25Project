@@ -1,7 +1,7 @@
 public abstract class User {
 
     protected String name;
-    private String division;
+    protected String division;
 
     public User(String name, String division){
         this.name = name;
@@ -12,15 +12,21 @@ public abstract class User {
         //default functionality, return all rows within users division
         return format(db.listAsStaff(division));
     }
-    public String modify(String patient, String status, Database db){
+    public String modify(String journalID, String status, Database db){
         //default, find patient row, check division and change status if correct division
-        return "Not implemented";
+        if(db.editJournalContent(name,journalID,status)){
+            return journalID + " updated to " + status;
+        }
+        else {
+            return "modification failed";
+        }
+
     }
     public String delete(String patient, Database db){
         //define in government
         return "Not Authorized";
     }
-    public String mkPatient(String patient, String nurse, String illness, String pwd, Database db){
+    public String mkJournal(String patient, String nurse, String illness, String pwd, Database db){
         //defined in doctor
         return "Not Authorized";
     }

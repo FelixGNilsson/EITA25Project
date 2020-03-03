@@ -1,4 +1,3 @@
-import java.io.BufferedReader;
 import java.io.PrintWriter;
 
 public class ServerUtils {
@@ -59,8 +58,8 @@ public class ServerUtils {
         if(command[0].equals("delete")){
             return currentUser.delete(command[1],db);
         }
-        if(command[0].equals("mkPatient")){
-            return currentUser.mkPatient(command[1], command[2], command[3], command[4],db);
+        if(command[0].equals("mkJournal")){
+            return currentUser.mkJournal(command[1], command[2], command[3], command[4],db);
         }
         return "Unknown command";
     }
