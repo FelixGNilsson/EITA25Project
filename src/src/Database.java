@@ -64,6 +64,9 @@ public class Database {
         return conn != null;
     }
 
+    /*
+     * Returns a string with all users in the database
+     */
     public String getUsers() {
         String query =
             "SELECT    * \n" +
@@ -79,6 +82,11 @@ public class Database {
         return "";
     }
     
+    
+    /*
+     * Creates a new user and hashes the password with a random salt
+     * TODO: Find user by ssn
+     */
     public boolean createUser(String username, String ssn, String fullname, String role, String division, String password) {
     	//TODO: Create 2FA
     	try {
@@ -112,13 +120,17 @@ public class Database {
     	return false;
     }
     
-    public String listAsUser(String username) {
+    /*
+     * Lists all journals 
+     * TODO: use ssn
+     */
+    public String listAsUser(String ssn) {
     	String query =
             "SELECT    * \n" +
             "FROM      journals\n" +	
             "WHERE		patient = ?";
     	try (PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setString(1, username);
+            ps.setString(1, ssn);
             ResultSet rs = ps.executeQuery();
             String result = JSONizer.toJSON(rs, "data");
             return result;
@@ -129,7 +141,10 @@ public class Database {
     	
     }
     
-    public String  listAsStaff(String division) {
+   /*
+    * Lists all journals on a given division
+    */
+    public String listAsStaff(String division) {
     	String query =
                 "SELECT    patient as Name, ssn as SocialSecurity, id as JournalID\n" +
                 "FROM      journals\n" +	
@@ -146,6 +161,9 @@ public class Database {
         	
     }
  
+    /*
+     * Lists all journals
+     */
     public String listAsGov() {
     	String query =
                 "SELECT    patient as Name, ssn as SocialSecurity, id as JournalID \n" +
@@ -179,6 +197,9 @@ public class Database {
     	return "";
     }
     
+    /*
+     * Shows the journal with the id journalID and logs which user accessed it
+     */
     public String viewJournal(String username, String journalID) {
     	//TODO: Show patientname (MIGHT BE SOLVED)
     	String query =
@@ -200,6 +221,9 @@ public class Database {
     }
     
     
+    /*
+     * Lists all log entries
+     */
     public String viewLogs() {
     	String query =
                 "SELECT    * \n" +
@@ -215,8 +239,9 @@ public class Database {
     }
    
     
-    
-    
+    /*
+     * Creates a new log when a given journal is accessed
+     */
     private void logJournalAccess(String user, String journalID, String action) {
     	String query =
                 "INSERT \n" +
@@ -237,11 +262,12 @@ public class Database {
         	
     }
     
+    
     /*
      * Creates a journal for a patient and assigns doctor, nurse, and division
      * returns true if journal was successfully created
      * TODO: Control that journal isn't created with non-existing users
-     * 
+     * TODO: return the journal ID
      */
     public boolean createJournal(String patientSSN, String doctorSSN, String nurseSSN, String division) {
     	String query = 
@@ -263,6 +289,9 @@ public class Database {
     }
     
     
+    /*
+     * Edits the content of a journal with the given id and adds a new log.
+     */
     public boolean editJournalContent(String userSSN, String journalID, String content) {
     	String query = 
     			"UPDATE journals\n"+
@@ -281,7 +310,37 @@ public class Database {
     	
     }
     
-   
+    
+    
+    //TODO: Delete journal
+    
+    
+    /*
+     * Authenticates user login
+     */
+    public boolean authenticateUser(String username, String password) {
+    	String query =
+                "SELECT    password, salt \n" +
+                "FROM      users"+
+        		"WHERE 	   username = ?";
+    	try (PreparedStatement ps = conn.prepareStatement(query)) {
+    		ps.setString(1, username);
+    		ResultSet rs = ps.executeQuery();
+    		String correctHash = rs.getString("password");
+    		String salt = rs.getString("salt");
+    		String newHash = PasswordManager.generatePasswdHash(password, salt);
+    		
+    		return correctHash.equals(newHash);
+    		
+    	} catch (SQLException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+    	
+    	
+    	return false;
+    }
     
     
     /*
