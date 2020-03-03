@@ -62,35 +62,24 @@ public class Database {
     /* --- insert your own code below --- */
     /* ===============================*== */
 
-    public String getStudents(Request req, Response res) {
+    public String getUsers() {
         String query =
-            "SELECT    s_id AS id, s_name AS name, gpa\n" +
-            "FROM      students\n" +
-            "WHERE     1 = 1\n";
-        ArrayList<String> params = new ArrayList<String>();
-        if (req.queryParams("name") != null) {
-            query += " AND s_name = ?\n";
-            params.add(req.queryParams("name"));
-        }
-        if (req.queryParams("minGpa") != null) {
-            query += " AND gpa >= ?\n";
-            params.add(req.queryParams("minGpa"));
-        }
-        try (PreparedStatement ps = conn.prepareStatement(query)) {
-            int idx = 0;
-            for (String param : params) {
-                ps.setString(++idx, param);
-            }
+            "SELECT    * \n" +
+            "FROM      users";
+        try (var ps = conn.prepareStatement(query)) {
             ResultSet rs = ps.executeQuery();
             String result = JSONizer.toJSON(rs, "data");
-            res.status(200);
-            res.body(result);
+
             return result;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return "";
     }
+    
+    
+    
+    /*
 
     public String getStudent(Request req, Response res, String id) {
         String query =
@@ -143,6 +132,7 @@ public class Database {
         }
         return "";
     }
+    */
 }
 
 
