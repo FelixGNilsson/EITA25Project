@@ -1,21 +1,22 @@
 public class Patient extends User{
 
-    public Patient(String division) {
-        super(division);
+    public Patient(String name,String division) {
+        super(name, division);
     }
 
     @Override
-    public void ls() {
+    public String ls() {
+        return null;
+    }
 
+
+    @Override
+    public String modify() {
+        return "Not Authorized";
     }
 
     @Override
-    public void modify() {
-
-    }
-
-    @Override
-    public void delete() {
-
+    public String delete() {
+        return "Not Authorized";
     }
 }

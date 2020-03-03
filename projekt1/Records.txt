@@ -1,0 +1,3 @@
+A:doktorA:nurseA:Daniel:Död
+A:doktorA:nurseA:NULL:Förkyld
+DIVISION:DOCTOR:NURSE:PATIENT:ILLNESS
