@@ -1,4 +1,7 @@
 import static spark.Spark.*;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.*;
 import spark.*;
@@ -94,8 +97,10 @@ public class server implements Runnable {
             e.printStackTrace();
         }
         
-      
-        Database db = new Database("C:\\Users\\Felan\\IdeaProjects\\EITA25Project\\src\\src\\db.sqlite");
+        String cwd = System.getProperty("user.dir");
+        Path dbPath = Paths.get(cwd, "src/src/db.sqlite");
+        System.out.println(dbPath);
+        Database db = new Database(dbPath.toAbsolutePath().toString());
         System.out.println(db.getUsers());
         utils = new ServerUtils(db);
         
