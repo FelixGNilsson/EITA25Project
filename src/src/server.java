@@ -14,8 +14,8 @@ import javax.security.cert.X509Certificate;
 public class server implements Runnable {
     private ServerSocket serverSocket = null;
     private static int numConnectedClients = 0;
-    Boolean authenticated = false;
-    ServerUtils utils = new ServerUtils();
+    private Boolean authenticated = false;
+    private static ServerUtils utils;
 
     public server(ServerSocket ss) throws IOException {
         serverSocket = ss;
@@ -95,8 +95,9 @@ public class server implements Runnable {
         }
         
       
-        Database db = new Database("/Users/emil/Documents/GitHub/EITA25Project/src/src/db.sqlite");
-        System.out.println(db.getUsers()); 
+        Database db = new Database("db.sqlite");
+        System.out.println(db.getUsers());
+        utils = new ServerUtils(db);
         
     }
 

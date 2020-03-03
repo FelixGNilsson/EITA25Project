@@ -7,6 +7,7 @@ public class ServerUtils {
     private String password;
     private AccountReader accReader;
     private User currentUser;
+    private static Database db;
 
     private static int USERNAME = 0;
     private static int SALT = 1;
@@ -14,8 +15,9 @@ public class ServerUtils {
     private static int TYPE_OF_USER = 3;
     private static int DIVISION = 4;
 
-    public ServerUtils(){
+    public ServerUtils(Database db){
         accReader = new AccountReader();
+        this.db = db;
     }
 
     public boolean authenticate(String clientMsg, PrintWriter out) {
@@ -49,16 +51,16 @@ public class ServerUtils {
     public String command(String clientMsg){
         String[] command = clientMsg.split(" ");
         if(command[0].equals("ls")){
-            return currentUser.ls();
+            return currentUser.ls(db);
         }
         if(command[0].equals("modify")){
-            return currentUser.modify(command[1], command[2]);
+            return currentUser.modify(command[1], command[2],db);
         }
         if(command[0].equals("delete")){
-            return currentUser.delete(command[1]);
+            return currentUser.delete(command[1],db);
         }
         if(command[0].equals("mkPatient")){
-            return currentUser.mkPatient(command[1], command[2], command[3], command[4]);
+            return currentUser.mkPatient(command[1], command[2], command[3], command[4],db);
         }
         return "Unknown command";
     }

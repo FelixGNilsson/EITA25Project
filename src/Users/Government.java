@@ -5,18 +5,18 @@ public class Government extends User {
     }
 
     @Override
-    public String ls() {
+    public String ls(Database db) {
         //list all
         return "Not implemented";
     }
 
     @Override
-    public String modify(String patient, String status) {
+    public String modify(String patient, String status, Database db) {
         return "Not Authorized";
     }
 
     @Override
-    public String delete(String patient) {
+    public String delete(String patient, Database db) {
         //delete row, no questions asked
         return "not impl";
     }

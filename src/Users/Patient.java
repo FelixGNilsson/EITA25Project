@@ -5,13 +5,13 @@ public class Patient extends User{
     }
 
     @Override
-    public String ls() {
+    public String ls(Database db) {
         //Only return row with this name
         return null;
     }
 
     @Override
-    public String modify(String patient, String status) {
+    public String modify(String patient, String status, Database db) {
         return "Not Authorized";
     }
 

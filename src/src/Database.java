@@ -66,7 +66,7 @@ public class Database {
         String query =
             "SELECT    * \n" +
             "FROM      users";
-        try (var ps = conn.prepareStatement(query)) {
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
             ResultSet rs = ps.executeQuery();
             String result = JSONizer.toJSON(rs, "data");
 
