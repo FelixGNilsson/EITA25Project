@@ -2,6 +2,9 @@ import static spark.Spark.*;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import spark.*;
 
@@ -81,14 +84,14 @@ public class Database {
     }
     
     public boolean createUser(String username, String ssn, String fullname, String role, String division, String password) {
-    	
+    	//TODO: Create 2FA
     	try {
     		String salt = PasswordManager.getSalt();
         	String hashed = PasswordManager.generatePasswdHash(password, salt);
         	String query = 
         			"INSERT\n"+
         			"INTO users(username, ssn, fullname, role, division, password, salt)\n"+
-        			"VALUES (?,?,?,?,?,?,?)";	
+        			"VALUES (?,?,?,?,?,?,?);";	
         	try(PreparedStatement ps = conn.prepareStatement(query)){
         		ps.setString(1,username);
         		ps.setString(2, ssn);
@@ -115,7 +118,7 @@ public class Database {
     
     public String listAsUser(String username) {
     	String query =
-            "SELECT    * \n" +
+            "SELECT    patient as Name, ssn as SocialSecurity, id as JournalID\\n" +
             "FROM      journals\n" +	
             "WHERE		patient = ?";
     	try (PreparedStatement ps = conn.prepareStatement(query)) {
@@ -161,8 +164,51 @@ public class Database {
         	return "";
     }
     
+    public String viewJournal(String username, String journalID) {
+    	//TODO: patients should only be able to access their own journal
+    	//TODO: Show which patient the journal belongs to 
+    	String query =
+                "SELECT    * \n" +
+                "FROM      journals\n"+
+                "WHERE id = ?";
+        	try (PreparedStatement ps = conn.prepareStatement(query)) {
+        		ps.setString(1, journalID);
+                ResultSet rs = ps.executeQuery();
+                logJournalAccess(username, journalID, "Read");
+                String result = JSONizer.toJSON(rs, "data");
+                return result;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        	return "";
+    }
     
     
+    
+    private void logJournalAccess(String user, String journalID, String action) {
+    	String query =
+                "INSERT \n" +
+                "INTO      logs(journal, access_date, access_time, user, action)"+
+                "VALUES (?,?,?,?,?);";
+        	try (PreparedStatement ps = conn.prepareStatement(query)) {
+        		ps.setString(1, journalID);
+        		ps.setString(2, LocalDate.now().toString());
+        		ps.setString(3, LocalTime.now().toString());
+        		ps.setString(4, user);
+        		ps.setString(5, action);
+                
+        		ps.executeQuery();
+                
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        	
+    }
+    
+    
+    
+    
+   
     
     
     /*

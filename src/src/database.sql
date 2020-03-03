@@ -7,8 +7,8 @@ DROP TABLE IF EXISTS logs;
 PRAGMA foreign_keys=ON;
 
 CREATE TABLE users(
-  username TEXT,
-  ssn INT PRIMARY KEY,
+  username TEXT PRIMARY KEY,
+  ssn INT,
   fullname TEXT,
   role TEXT,
   division TEXT,
@@ -35,6 +35,7 @@ CREATE TABLE logs(
   access_date DATE,
   access_time TIME,
   user TEXT,
+  action TEXT,
 
   PRIMARY KEY(id)
   FOREIGN KEY(journal) REFERENCES journals(id)
