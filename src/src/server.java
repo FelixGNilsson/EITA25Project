@@ -95,8 +95,8 @@ public class server implements Runnable {
         }
         
       
-        var db = new Database("db.sqlite");
-        System.out.println(db.getUsers());
+        Database db = new Database("/Users/emil/Documents/GitHub/EITA25Project/src/src/db.sqlite");
+        System.out.println(db.getUsers()); 
         
     }
 

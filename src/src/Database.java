@@ -65,7 +65,7 @@ public class Database {
     public String getUsers() {
         String query =
             "SELECT    * \n" +
-            "FROM      journals	";
+            "FROM      users";
         try (var ps = conn.prepareStatement(query)) {
             ResultSet rs = ps.executeQuery();
             String result = JSONizer.toJSON(rs, "data");
@@ -76,6 +76,10 @@ public class Database {
         }
         return "";
     }
+    
+    
+    
+    /*
 
     public String getStudent(Request req, Response res, String id) {
         String query =
@@ -128,6 +132,7 @@ public class Database {
         }
         return "";
     }
+    */
 }
 
 
