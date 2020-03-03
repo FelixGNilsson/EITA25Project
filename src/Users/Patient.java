@@ -6,17 +6,13 @@ public class Patient extends User{
 
     @Override
     public String ls() {
+        //Only return row with this name
         return null;
     }
 
-
     @Override
-    public String modify() {
+    public String modify(String patient, String status) {
         return "Not Authorized";
     }
 
-    @Override
-    public String delete() {
-        return "Not Authorized";
-    }
 }

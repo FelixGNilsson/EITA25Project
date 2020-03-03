@@ -52,10 +52,13 @@ public class ServerUtils {
             return currentUser.ls();
         }
         if(command[0].equals("modify")){
-            return currentUser.modify();
+            return currentUser.modify(command[1], command[2]);
         }
         if(command[0].equals("delete")){
-            return currentUser.delete();
+            return currentUser.delete(command[1]);
+        }
+        if(command[0].equals("mkPatient")){
+            return currentUser.mkPatient(command[1], command[2], command[3], command[4]);
         }
         return "Unknown command";
     }

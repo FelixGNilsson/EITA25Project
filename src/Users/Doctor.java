@@ -5,17 +5,9 @@ public class Doctor extends User{
     }
 
     @Override
-    public String ls() {
-        return null;
-    }
-
-    @Override
-    public String modify() {
-        return "not impl";
-    }
-
-    @Override
-    public String delete() {
-        return "not impl";
+    public String mkPatient(String patient, String nurse, String illness, String pwd){
+        //create record using DIVISION:DOCTOR:NURSE:PATIENT:ILLNESS ,
+        // AND create Account with Certificate script, and account USERNAME:SALT:PASSWORD:TYPE_OF_USER:DIVISION
+        return "Not Implemented";
     }
 }

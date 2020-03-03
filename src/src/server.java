@@ -49,6 +49,7 @@ public class server implements Runnable {
                 String response = utils.command(clientMsg);
                 out.println(response);
                 out.flush();
+                //Only prints one line
 
                 /*
                     String rev = new StringBuilder(clientMsg).reverse().toString();
