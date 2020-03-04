@@ -48,25 +48,25 @@ public class ServerUtils {
     public String command(String clientMsg){
         String[] command = clientMsg.split(" ");
         //TODO: ta bort felix lösning på problemet
-        if(command[0].equals("ls")){
+        if(command[0].equals("ls") && command.length == 1){
             return currentUser.ls(db);
         }
-        if(command[0].equals("modify")){
+        if(command[0].equals("modify") && command.length == 3){
             return currentUser.modify(command[1], command[2],db);
         }
-        if(command[0].equals("delete")){
+        if(command[0].equals("delete") && command.length == 2){
             return currentUser.delete(command[1],db);
         }
-        if(command[0].equals("mkJournal")){
+        if(command[0].equals("mkJournal") && command.length == 5){
             return currentUser.mkJournal(command[1], command[2], command[3], command[4],db);
         }
-        if(command[0].equals("listJournals")){
+        if(command[0].equals("listJournals") && command.length == 1){
             return db.viewJournals(); 
         }
-        if(command[0].equals("listLogs")){
+        if(command[0].equals("listLogs") && command.length == 1){
             return db.viewLogs();
         }
-        if(command[0].equals("listUsers")){
+        if(command[0].equals("listUsers") && command.length == 1){
             return db.getUsers();
         }
         return "Unknown command";
