@@ -213,7 +213,6 @@ public class Database {
     
     /*
      * Shows the journal with the id journalID and logs which user accessed it
-     * TODO: make sure that the user has the rights to view journal
      */
     public String viewJournal(String username, String journalID) {
     	if(!getDivision(username).equals(getDivisionFromJournal(journalID))) {
@@ -286,9 +285,11 @@ public class Database {
      * Creates a journal for a patient and assigns doctor, nurse, and division
      * returns true if journal was successfully created
      * TODO: Control that journal isn't created with non-existing users
-     * TODO: return the journal ID
      */
     public String createJournal(String patient, String doctor, String nurse, String division) {
+    	if(!(doesUserExist(patient) && doesUserExist(doctor) && doesUserExist(nurse))) {
+    		return "";
+    	}
     	String statement = 
     			"INSERT\n"+
     			"INTO journals(patient, doctor, nurse, division)\n"+
@@ -351,7 +352,9 @@ public class Database {
     
     
     
-    //TODO: Delete journal
+    /*
+     * Removes a journal and logs the action
+     */
     public boolean deleteJournal(String username, String journalID) {
     	String query = 
     			"DELETE FROM journals\n"+
@@ -369,9 +372,9 @@ public class Database {
     }
     
     
+    
     /*
      * Authenticates user login
-     * TODO: returnera relevant information (role and division)
      */
     public String authenticateUser(String username, String password) {
     	String query =
@@ -405,6 +408,20 @@ public class Database {
     	return "Failed to authenticate user";
     }
     
+    private boolean doesUserExist(String username) {
+    	String query = 
+    			"SELECT username\n"+
+    			"FROM users\n"+
+    			"WHERE username = ?";	
+    	try(PreparedStatement ps = conn.prepareStatement(query)){
+    		ps.setString(1, username);
+    		ResultSet rs = ps.executeQuery();
+    		username = rs.getString("username");
+    	}catch(SQLException e) {
+    		return false;
+    	}
+    	return true;
+    }
     
     private String getDivision(String username) {
     	String query = 
@@ -421,7 +438,6 @@ public class Database {
     	return null;
     }
     
-    //TODO: get nurse from journal
     
     private String getNurseFromJournal(String journalID) {
     	String query = 
