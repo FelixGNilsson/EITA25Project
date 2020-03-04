@@ -216,6 +216,13 @@ public class Database {
      * TODO: make sure that the user has the rights to view journal
      */
     public String viewJournal(String username, String journalID) {
+    	if(!getDivision(username).equals(getDivisionFromJournal(journalID))) {
+    		return "";
+    	}
+    	if(getRole(username).equals("nurse") && !username.equals(getNurseFromJournal(journalID))) {
+			return "";
+    	}
+    	
     	String query =
                 "SELECT    * \n" +
                 "FROM      journals\n"+
