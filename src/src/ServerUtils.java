@@ -33,6 +33,8 @@ public class ServerUtils {
                 out.flush();
                 String[] info = res.split(":");
                 defineUser(userName, info);
+                userName = null;
+                password = null;
                 return true;
             }
             else{

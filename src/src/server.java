@@ -54,17 +54,6 @@ public class server implements Runnable {
             	response.append("\n|");
                 out.println(response);
                 out.flush();
-                //Only prints one line
-
-                /*
-                    String rev = new StringBuilder(clientMsg).reverse().toString();
-                    System.out.println("received '" + clientMsg + "' from client");
-                    System.out.print("sending '" + rev + "' to client...");
-                    out.println(rev);
-                    out.flush();
-                    System.out.println("done\n");
-
-                */
 			}
             authenticated = false;
 			in.close();
