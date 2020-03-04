@@ -6,6 +6,7 @@ import java.security.KeyStore;
 import java.security.cert.*;
 import java.util.Arrays;
 import java.security.*;
+import java.util.Scanner;
 
 /*
  * This example shows how to set up a key manager to perform client
@@ -16,6 +17,8 @@ import java.security.*;
  * the firewall by following SSLSocketClientWithTunneling.java.
  */
 public class client {
+    private static KeyStore ks = null;
+    private static KeyStore ts = null;
 
     public static void main(String[] args) throws Exception {
         String host = null;
@@ -38,14 +41,37 @@ public class client {
         try { /* set up a key manager for client authentication */
             SSLSocketFactory factory = null;
             try {
-                char[] password = "password".toCharArray();
+                char[] password = "asdasd".toCharArray();
                 KeyStore ks = KeyStore.getInstance("JKS");
                 KeyStore ts = KeyStore.getInstance("JKS");
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
                 TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
                 SSLContext ctx = SSLContext.getInstance("TLS");
-                ks.load(new FileInputStream("Certificates/clientkeystore"), password);  // keystore password (storepass)
-				ts.load(new FileInputStream("Certificates/clienttruststore"), password); // truststore password (storepass);
+
+                Scanner sc = new Scanner(System.in);
+                String input = "";
+                boolean quit = false;
+
+                while(!quit){
+                    try {
+                        System.out.println("Write the name for the certificate you have");
+                        input = sc.nextLine();
+                        if(!input.equals("government")){
+                            String cPath = input.toLowerCase().substring(0, input.length() - 1) + "_" + input.toLowerCase().charAt(input.length() - 1);
+                            ks.load(new FileInputStream("Certificates/client/"+ cPath +"/KeyStore"), password);  // keystore password (storepass)
+                            ts.load(new FileInputStream("Certificates/client/"+ cPath +"/TrustStore"), password); // truststore password (storepass);
+                        } else {
+                            ks.load(new FileInputStream("Certificates/client/government/KeyStore"), password);  // keystore password (storepass)
+                            ts.load(new FileInputStream("Certificates/client/government/TrustStore"), password); // truststore password (storepass);
+                        }
+                        quit = true;
+                    } catch (Exception e) {
+                        System.out.println("User cerficate does not exist, chose an existing user or type quit to exit");
+                        if(input.equals("quit")){
+                            quit = true;
+                        }
+                    }
+                }
 				kmf.init(ks, password); // user password (keypass)
 				tmf.init(ts); // keystore can be used as truststore here
 				ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
@@ -119,7 +145,11 @@ public class client {
 			read.close();
             socket.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            if(ks == null && ts == null){
+
+            } else {
+                e.printStackTrace();
+            }
         }
     }
 
