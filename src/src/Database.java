@@ -230,7 +230,7 @@ public class Database {
     	try (PreparedStatement ps = conn.prepareStatement(query)) {
     		ps.setString(1, journalID);
             ResultSet rs = ps.executeQuery();
-            logJournalAccess(username, journalID, "Read");
+            logJournalAccess(username, journalID, "READ");
             String result = JSONizer.toJSON(rs, "data");
             return result;
         } catch (SQLException e) {
@@ -306,7 +306,7 @@ public class Database {
         	try (PreparedStatement ps2 = conn.prepareStatement(query)) {
                 ResultSet rs = ps2.executeQuery();
                 String id = rs.getString("id");
-                logJournalAccess(doctor, id, "Creation");
+                logJournalAccess(doctor, id, "CREATE");
                 return id;
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -339,7 +339,7 @@ public class Database {
     		ps.setString(1, content);
     		ps.setString(2, journalID);
     		ps.executeUpdate();
-    		logJournalAccess(user, null, "Edit");
+    		logJournalAccess(user, journalID, "EDIT");
     	}catch(SQLException e) {
     		e.printStackTrace();
     		return false;
@@ -352,6 +352,21 @@ public class Database {
     
     
     //TODO: Delete journal
+    public boolean deleteJournal(String username, String journalID) {
+    	String query = 
+    			"DELETE FROM journals\n"+
+    			"WHERE id = ?";	
+    	try(PreparedStatement ps = conn.prepareStatement(query)){
+    		ps.setString(1, journalID);
+    		ps.executeUpdate();
+    		logJournalAccess(username, journalID, "DELETE");
+    	}catch(SQLException e) {
+    		e.printStackTrace();
+    		return false;
+    	}
+    					
+    	return true;
+    }
     
     
     /*
