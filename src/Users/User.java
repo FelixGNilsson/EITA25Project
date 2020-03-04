@@ -26,7 +26,7 @@ public abstract class User {
         //define in government
         return "Not Authorized";
     }
-    public String mkJournal(String patient, String nurse, String illness, String pwd, Database db){
+    public String mkJournal(String patient, String nurse, String illness, Database db){
         //defined in doctor
         return "Not Authorized";
     }

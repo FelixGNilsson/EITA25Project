@@ -59,8 +59,8 @@ public class ServerUtils {
         if(command[0].equals("delete") && command.length == 2){
             return currentUser.delete(command[1],db);
         }
-        if(command[0].equals("mkJournal") && command.length == 5){
-            return currentUser.mkJournal(command[1], command[2], command[3], command[4],db);
+        if(command[0].equals("mkJournal") && command.length == 4){
+            return currentUser.mkJournal(command[1], command[2], command[3],db);
         }
         if(command[0].equals("listJournals") && command.length == 1){
             return db.viewJournals(); 
@@ -72,7 +72,7 @@ public class ServerUtils {
             return db.getUsers();
         }
         if(command[0].equals("lscmd")){
-            return "ls \n modify JournalID newStatus \n delete Patient \n mkJournal patient nurse illness pwd\n listJournals\n listLogs\n listUsers \n viewJournal journalID" ;
+            return " ls \n modify JournalID newStatus \n delete Patient \n mkJournal patient nurse illness\n listJournals\n listLogs\n listUsers \n viewJournal journalID" ;
         }
         if(command[0].equals("viewJournal") && command.length == 2){
             return currentUser.viewJournal(command[1],db);
