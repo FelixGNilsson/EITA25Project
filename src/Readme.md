@@ -1,14 +1,17 @@
-Login: patientA - patientC
+Certificate names:
+       patientA - patientC
        nurseA - nurseC
        doctorA - doctorC
        gov
-Password = username
+
+Login:
+Certificate name = username = password
 
 
 Commands:
 ls
 modify JournalID newStatus
-delete Patient
+delete JournalID
 mkJournal patient nurse illness pwd
 listJournals
 listLogs

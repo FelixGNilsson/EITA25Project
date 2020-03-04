@@ -6,19 +6,19 @@ public class Government extends User {
 
     @Override
     public String ls(Database db) {
-        //list all
         return db.listAsGov();
     }
 
-    //TODO implement
     @Override
     public String modify(String patient, String status, Database db) {
         return "Not Authorized";
     }
 
     @Override
-    public String delete(String patient, Database db) {
-        //delete row, no questions asked
-        return "not impl";
+    public String delete(String journalID, Database db) {
+        if(db.deleteJournal(name,journalID)){
+            return "Successful removal of " + journalID;
+        }
+        return "Failed removal";
     }
 }

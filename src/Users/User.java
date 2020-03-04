@@ -22,7 +22,7 @@ public abstract class User {
         }
 
     }
-    public String delete(String patient, Database db){
+    public String delete(String journalID, Database db){
         //define in government
         return "Not Authorized";
     }
