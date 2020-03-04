@@ -338,6 +338,7 @@ public class Database {
     	try(PreparedStatement ps = conn.prepareStatement(query)){
     		ps.setString(1, content);
     		ps.setString(2, journalID);
+    		ps.executeUpdate();
     		logJournalAccess(user, null, "Edit");
     	}catch(SQLException e) {
     		e.printStackTrace();
