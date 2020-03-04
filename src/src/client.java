@@ -56,7 +56,7 @@ public class client {
                     try {
                         System.out.println("Write the name for the certificate you have");
                         input = sc.nextLine();
-                        if(!input.equals("government")){
+                        if(!input.equals("gov")){
                             String cPath = input.toLowerCase().substring(0, input.length() - 1) + "_" + input.toLowerCase().charAt(input.length() - 1);
                             ks.load(new FileInputStream("Certificates/client/"+ cPath +"/KeyStore"), password);  // keystore password (storepass)
                             ts.load(new FileInputStream("Certificates/client/"+ cPath +"/TrustStore"), password); // truststore password (storepass);
