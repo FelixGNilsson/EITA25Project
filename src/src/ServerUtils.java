@@ -70,7 +70,7 @@ public class ServerUtils {
             return db.getUsers();
         }
         if(command[0].equals("lscmd")){
-            return "ls, modify, delete, mkJournal, listJournals, listLogs, listUsers";
+            return "ls \n modify JournalID newStatus \n delete Patient \n mkJournal patient nurse illness pwd\n listJournals\n listLogs\n listUsers";
         }
         return "Unknown command";
     }
