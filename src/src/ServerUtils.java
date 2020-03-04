@@ -32,7 +32,9 @@ public class ServerUtils {
                 out.println("Successful login");
                 out.flush();
                 String[] info = res.split(":");
-                defineUser(userName, info[0], info[1]);
+                defineUser(userName, info);
+                userName = null;
+                password = null;
                 return true;
             }
             else{
@@ -48,41 +50,42 @@ public class ServerUtils {
     public String command(String clientMsg){
         String[] command = clientMsg.split(" ");
         //TODO: ta bort felix lösning på problemet
-        if(command[0].equals("ls")){
+        if(command[0].equals("ls") && command.length == 1){
             return currentUser.ls(db);
         }
-        if(command[0].equals("modify")){
+        if(command[0].equals("modify") && command.length == 3){
             return currentUser.modify(command[1], command[2],db);
         }
-        if(command[0].equals("delete")){
+        if(command[0].equals("delete") && command.length == 2){
             return currentUser.delete(command[1],db);
         }
-        if(command[0].equals("mkJournal")){
+        if(command[0].equals("mkJournal") && command.length == 5){
             return currentUser.mkJournal(command[1], command[2], command[3], command[4],db);
         }
-        if(command[0].equals("listJournals")){
+        if(command[0].equals("listJournals") && command.length == 1){
             return db.viewJournals(); 
         }
-        if(command[0].equals("listLogs")){
+        if(command[0].equals("listLogs") && command.length == 1){
             return db.viewLogs();
         }
-        if(command[0].equals("listUsers")){
+        if(command[0].equals("listUsers") && command.length == 1){
             return db.getUsers();
         }
         if(command[0].equals("lscmd")){
-            return "ls, modify, delete, mkJournal, listJournals, listLogs, listUsers";
+            return "ls \n modify JournalID newStatus \n delete Patient \n mkJournal patient nurse illness pwd\n listJournals\n listLogs\n listUsers";
         }
         return "Unknown command";
     }
 
-    private void defineUser(String user, String role, String division){
-        if(role.equalsIgnoreCase("Doctor")){
-            currentUser = new Doctor(user, division);
-        } else if(role.equalsIgnoreCase("Nurse")){
-            currentUser = new Nurse(user, division);
-        } else if(role.equalsIgnoreCase("Patient")){
+    private void defineUser(String user, String[] info){
+        //info[role,division]
+        if(info[0].equalsIgnoreCase("Doctor")){
+            currentUser = new Doctor(user, info[1]);
+        } else if(info[0].equalsIgnoreCase("Nurse")){
+            currentUser = new Nurse(user, info[1]);
+        } else if(info[0].equalsIgnoreCase("Patient")){
             currentUser = new Patient(user,"");
-        } else if(role.equalsIgnoreCase("Government")){
+        } else if(info[0].equalsIgnoreCase("Government")){
             currentUser = new Government("","");
         }
     }
