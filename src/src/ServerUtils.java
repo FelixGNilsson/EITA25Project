@@ -69,8 +69,10 @@ public class ServerUtils {
         if(command[0].equals("listUsers") && command.length == 1){
             return db.getUsers();
         }
+        if(command[0].equals("lscmd")){
+            return "ls, modify, delete, mkJournal, listJournals, listLogs, listUsers";
+        }
         return "Unknown command";
-        
     }
 
     private void defineUser(String user, String[] info){
