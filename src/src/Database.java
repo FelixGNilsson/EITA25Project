@@ -281,7 +281,7 @@ public class Database {
      * TODO: Control that journal isn't created with non-existing users
      * TODO: return the journal ID
      */
-    public boolean createJournal(String patient, String doctor, String nurse, String division) {
+    public String createJournal(String patient, String doctor, String nurse, String division) {
     	String statement = 
     			"INSERT\n"+
     			"INTO journals(patient, doctor, nurse, division)\n"+
@@ -300,24 +300,30 @@ public class Database {
                 ResultSet rs = ps2.executeQuery();
                 String id = rs.getString("id");
                 logJournalAccess(doctor, id, "Creation");
+                return id;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
     	}catch(SQLException e) {
     		e.printStackTrace();
-    		return false;
+    		return "";
     	}
     					
-    	return true;
+    	return "";
     }
     
     
     /*
      * Edits the content of a journal with the given id and adds a new log.
-     * TODO: Doctors should only be able to edit journals in their division
-     * TODO: Gov should be able to edit all journals
      */
     public boolean editJournalContent(String user, String journalID, String content) {
+    	if(!getDivision(user).equals(getDivisionFromJournal(journalID))) {
+    		return false;
+    	}
+    	if(getRole(user).equals("nurse") && !user.equals(getNurseFromJournal(journalID))) {
+			return false;
+    	}
+    	
     	String query = 
     			"UPDATE journals\n"+
     			"SET content = ?\n"+
@@ -374,6 +380,68 @@ public class Database {
     	
     	
     	return "Failed to authenticate user";
+    }
+    
+    
+    private String getDivision(String username) {
+    	String query = 
+    			"SELECT division\n"+
+    			"FROM users\n"+
+    			"WHERE username = ?";	
+    	try(PreparedStatement ps = conn.prepareStatement(query)){
+    		ps.setString(1, username);
+    		ResultSet rs = ps.executeQuery();
+    		return rs.getString("division");
+    	}catch(SQLException e) {
+    		e.printStackTrace();
+    	}
+    	return null;
+    }
+    
+    //TODO: get nurse from journal
+    
+    private String getNurseFromJournal(String journalID) {
+    	String query = 
+    			"SELECT nurse\n"+
+    			"FROM journals\n"+
+    			"WHERE id = ?";	
+    	try(PreparedStatement ps = conn.prepareStatement(query)){
+    		ps.setString(1, journalID);
+    		ResultSet rs = ps.executeQuery();
+    		return rs.getString("nurse");
+    	}catch(SQLException e) {
+    		e.printStackTrace();
+    	}
+    	return null;
+    }  
+    
+    private String getDivisionFromJournal(String journalID) {
+    	String query = 
+    			"SELECT division\n"+
+    			"FROM journals\n"+
+    			"WHERE id = ?";	
+    	try(PreparedStatement ps = conn.prepareStatement(query)){
+    		ps.setString(1, journalID);
+    		ResultSet rs = ps.executeQuery();
+    		return rs.getString("division");
+    	}catch(SQLException e) {
+    		e.printStackTrace();
+    	}
+    	return null;
+    }    
+    private String getRole(String username) {
+    	String query = 
+    			"SELECT role\n"+
+    			"FROM users\n"+
+    			"WHERE username = ?";	
+    	try(PreparedStatement ps = conn.prepareStatement(query)){
+    		ps.setString(1, username);
+    		ResultSet rs = ps.executeQuery();
+    		return rs.getString("role");
+    	}catch(SQLException e) {
+    		e.printStackTrace();
+    	}
+    	return null;
     }
     
 }
