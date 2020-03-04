@@ -56,9 +56,14 @@ public class client {
                     try {
                         System.out.println("Write the name for the certificate you have");
                         input = sc.nextLine();
-                        String cPath = input.toLowerCase().substring(0, input.length() - 1) + "_" + input.toLowerCase().charAt(input.length() - 1);
-                        ks.load(new FileInputStream("Certificates/client/"+ cPath +"/KeyStore"), password);  // keystore password (storepass)
-                        ts.load(new FileInputStream("Certificates/client/"+ cPath +"/TrustStore"), password); // truststore password (storepass);
+                        if(!input.equals("government")){
+                            String cPath = input.toLowerCase().substring(0, input.length() - 1) + "_" + input.toLowerCase().charAt(input.length() - 1);
+                            ks.load(new FileInputStream("Certificates/client/"+ cPath +"/KeyStore"), password);  // keystore password (storepass)
+                            ts.load(new FileInputStream("Certificates/client/"+ cPath +"/TrustStore"), password); // truststore password (storepass);
+                        } else {
+                            ks.load(new FileInputStream("Certificates/client/government/KeyStore"), password);  // keystore password (storepass)
+                            ts.load(new FileInputStream("Certificates/client/government/TrustStore"), password); // truststore password (storepass);
+                        }
                         quit = true;
                     } catch (Exception e) {
                         System.out.println("User cerficate does not exist, chose an existing user or type quit to exit");
