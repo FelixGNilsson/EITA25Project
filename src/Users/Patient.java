@@ -14,4 +14,6 @@ public class Patient extends User{
         return "Not Authorized";
     }
 
+    @Override
+    public String viewJournal(String journalID, Database db) {return "Not Authorized";};
 }

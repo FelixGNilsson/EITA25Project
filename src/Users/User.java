@@ -31,6 +31,10 @@ public abstract class User {
         return "Not Authorized";
     }
 
+    public String viewJournal(String journalID, Database db){
+        return db.viewJournal(name, journalID);
+    }
+
 
 
 }
